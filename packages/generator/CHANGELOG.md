@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/RolfvMusscher/prisma-generator-erd-d2/compare/v1.0.0...v1.1.0) (2023-12-12)
+
+
+### Bug Fixes
+
+* using github token ([574c971](https://github.com/RolfvMusscher/prisma-generator-erd-d2/commit/574c9713848f3510017bcfc0c2e243b7552cf509))
+
+
+### Features
+
+* adding readme ([3e72049](https://github.com/RolfvMusscher/prisma-generator-erd-d2/commit/3e720495b73d49178be77eb6ff7ef9a77d5193e6))
+
 # 1.0.0 (2023-12-12)
 
 
