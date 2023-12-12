@@ -36,12 +36,12 @@
     "@semantic-release/git": "^10.0.1",
     "semantic-release": "^18.0.1"
   },
-  "homepage": "Link to homepage or github readme here",
+  "homepage": "https://github.com/RolfvMusscher/prisma-generator-erd-d2",
   "repository": {
     "type": "git",
     "url": "Repo link here"
   },
-  "author": "Your Name <Your Email>",
+  "author": "Rolf van Musscher <rolf.van.musscher@gmail.com>",
   "keywords": [
     "prisma",
     "prisma2",
