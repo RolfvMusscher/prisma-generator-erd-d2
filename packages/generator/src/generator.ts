@@ -1,9 +1,9 @@
 import { generatorHandler, GeneratorOptions } from '@prisma/generator-helper'
 import { logger } from '@prisma/sdk'
+import fs from "fs";
 import path from 'path'
 import { GENERATOR_NAME } from './constants'
-import { genEnum } from './helpers/genEnum'
-import { writeFileSafely } from './utils/writeFileSafely'
+import { D2Generator } from './utils/d2-generator'
 
 const { version } = require('../package.json')
 
@@ -17,15 +17,14 @@ generatorHandler({
     }
   },
   onGenerate: async (options: GeneratorOptions) => {
-    options.dmmf.datamodel.enums.forEach(async (enumInfo) => {
-      const tsEnum = genEnum(enumInfo)
+    const generator = new D2Generator(options);
 
-      const writeLocation = path.join(
-        options.generator.output?.value!,
-        `${enumInfo.name}.ts`,
-      )
-
-      await writeFileSafely(writeLocation, tsEnum)
-    })
+    const file: string = options.generator.output?.value ?? "./Schema.d2";
+    try {
+      await fs.promises.mkdir(path.dirname(file), { recursive: true });
+    } catch { }
+    const generated = generator.Generate();
+    await fs.writeFileSync(file, generated, "utf8");
+    ;
   },
 })

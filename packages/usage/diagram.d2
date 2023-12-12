@@ -1,0 +1,108 @@
+
+Rti: {
+    shape: sql_table
+    id: String { constraint: [primary_key; unique] }
+	rtiId: String { constraint: [unique] }
+	size: RtiSize 
+	addOnType: String 
+	bottomState: RtiBottomState 
+	bottomStateSince: DateTime 
+	lastEventTime: DateTime 
+	rtiLocations: RtiLocation 
+	lastKnownBlrLocationId: String { constraint: [foreign_key] }
+	lastKnownBlrLocation: BlrGeoLocation 
+	lastKnownBlrLocationEnteredAt: DateTime 
+	lastKnownBlrLocationLeftAt: DateTime 
+	availableStatus: RtiAvailableStatus 
+	createdAt: DateTime 
+	updatedAt: DateTime 
+	unavailableLatitude: Float 
+	unavailableLongitude: Float 
+	unavailableGeoJSONGeometry: Json 
+	unavailableAt: DateTime 
+}
+        
+RtiLocation: {
+    shape: sql_table
+    id: String { constraint: [primary_key; unique] }
+	rtiId: String { constraint: [foreign_key] }
+	rti: Rti 
+	since: DateTime 
+	geoLocationId: String { constraint: [foreign_key] }
+	geoLocation: GeoLocation 
+}
+        
+GeoLocation: {
+    shape: sql_table
+    id: String { constraint: [primary_key] }
+	reference: String 
+	name: String 
+	parentId: String { constraint: [foreign_key] }
+	country: GeoLocationCountry 
+	geoLocationType: GeoLocationType 
+	parent: GeoLocation 
+	directChilds: GeoLocation 
+	shortName: String 
+	geofeature: Json 
+	centerGeoJSONGeometry: Json 
+	rtiLocations: RtiLocation 
+	blrGeoLocation: BlrGeoLocation 
+	allParents: GeoLocationParents 
+	allChilds: GeoLocationParents 
+	snapshots: GeoLocationSnapshot 
+}
+        
+GeoLocationSnapshot: {
+    shape: sql_table
+    id: String { constraint: [primary_key] }
+	geoLocationId: String { constraint: [foreign_key] }
+	geoLocation: GeoLocation 
+	createdAt: DateTime 
+	numberSmallRcs: Int 
+	numberSmallRcsBottomDown: Int 
+	numberSmallRcsBottomUp: Int 
+	numberSmallRcsBottomUnknown: Int 
+	numberLargeRcs: Int 
+	numberLargeRcsBottomDown: Int 
+	numberLargeRcsBottomUp: Int 
+	numberLargeRcsBottomUnknown: Int 
+}
+        
+GeoLocationParents: {
+    shape: sql_table
+    id: String { constraint: [primary_key] }
+	parentId: String { constraint: [foreign_key] }
+	childId: String { constraint: [foreign_key] }
+	parent: GeoLocation 
+	child: GeoLocation 
+}
+        
+BlrGeoLocation: {
+    shape: sql_table
+    id: String { constraint: [primary_key] }
+	locationId: String { constraint: [unique] }
+	locationType: String 
+	locationTypeCode: String 
+	geoLocationId: String { constraint: [foreign_key; unique] }
+	geoLocation: GeoLocation 
+	lastKnownLocationForRtis: Rti 
+	geofenceCertainty: Decimal 
+	geofenceCenter: Json 
+	businessUnit: String 
+	buildingLetter: String 
+	buildingNumber: String 
+	buildingNumberExtension: String 
+	city: String 
+	country: String 
+	countryCode: String 
+	postalCode: String 
+	streetName: String 
+}
+        Rti.lastKnownBlrLocationId -> BlrGeoLocation
+RtiLocation.rtiId -> Rti
+RtiLocation.geoLocationId -> GeoLocation
+GeoLocation.parentId -> GeoLocation
+GeoLocationSnapshot.geoLocationId -> GeoLocation
+GeoLocationParents.parentId -> GeoLocation
+GeoLocationParents.childId -> GeoLocation
+BlrGeoLocation.geoLocationId -> GeoLocation

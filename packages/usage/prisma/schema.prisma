@@ -1,6 +1,12 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
 generator custom_generator {
   provider = "node ../../node_modules/prisma-generator-erd-d2"
-  output   = "../types"
+   
+  output   = "../diagram.d2"
 }
 
 datasource db {
@@ -8,27 +14,148 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+enum RtiSize {
+  SMALL
+  LARGE
 }
 
-enum NotificationType {
-  newPosts
-  newComments
-  newFollowers
-  reply
-  heartOnPost
-  heartOnComment
-  heartOnReply
+enum RtiBottomState {
+  UP
+  DOWN
+  UNKNOWN
 }
 
-enum Language {
-  Typescript
-  Javascript
-  Rust
-  Go
-  Python
-  Cpp
+enum GeoLocationType {
+  BLR
+  ZIPCODE4
+  ZIPCODE6
+  PROVINCE
 }
+
+enum GeoLocationCountry {
+  NL
+  BE
+  DEU
+}
+
+enum RtiAvailableStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+model Rti {
+  id String @id @unique @default(uuid())
+  rtiId String @unique
+  size RtiSize
+  addOnType String
+  bottomState RtiBottomState? @default(UNKNOWN)
+  bottomStateSince DateTime?
+  lastEventTime DateTime?
+  rtiLocations RtiLocation[] @relation("RtiLocation")
+  lastKnownBlrLocationId String?
+  lastKnownBlrLocation BlrGeoLocation? @relation("LastKnownBlrLocation", fields: [lastKnownBlrLocationId], references: [id], onDelete: Cascade)
+  lastKnownBlrLocationEnteredAt DateTime?
+  lastKnownBlrLocationLeftAt DateTime?
+  availableStatus RtiAvailableStatus @default(AVAILABLE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  unavailableLatitude Float?
+  unavailableLongitude Float?
+  unavailableGeometry Unsupported("geometry")?
+  unavailableGeoJSONGeometry Json?
+  unavailableAt DateTime?
+
+  @@index([rtiId])
+}
+
+model RtiLocation {
+  id String @id @unique @default(uuid())
+  rtiId String
+  rti Rti @relation("RtiLocation", fields: [rtiId], references: [rtiId], onDelete: Cascade)
+  since DateTime
+  geoLocationId String
+  geoLocation GeoLocation? @relation("RtiGeoLocation", fields: [geoLocationId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  @@index([geoLocationId, rtiId])
+  @@index([rtiId])
+}
+
+model GeoLocation {
+  id String @id @default(uuid())
+  reference String
+  name String?
+  parentId String?
+  country GeoLocationCountry @default(NL)
+  geoLocationType GeoLocationType
+  parent GeoLocation? @relation("ParentGeoLocation", fields: [parentId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  directChilds GeoLocation[] @relation("ParentGeoLocation")
+  shortName  String?
+  geofeature Json
+  geometry Unsupported("geometry")?
+  centerGeometry Unsupported("geometry")?
+  centerGeoJSONGeometry Json?
+  rtiLocations RtiLocation[] @relation("RtiGeoLocation")
+  blrGeoLocation BlrGeoLocation? @relation("BlrGeoLocation")
+  allParents GeoLocationParents[] @relation("GeoLocationParents")
+  allChilds GeoLocationParents[] @relation("GeoLocationChilds")
+  snapshots GeoLocationSnapshot[] @relation("GeolocationSnapshots")
+
+  @@unique([reference, geoLocationType, country])
+  @@index([parentId])
+  @@index([reference, country])
+  @@index([reference, country, geoLocationType])
+  @@index([geoLocationType])
+  @@index([id])
+}
+
+model GeoLocationSnapshot {
+  id String @id @default(uuid())
+  geoLocationId String
+  geoLocation GeoLocation @relation("GeolocationSnapshots", fields: [geoLocationId], references: [id], onUpdate: Cascade, onDelete: Cascade )
+  createdAt DateTime @default(now())
+  numberSmallRcs Int @default(0)
+  numberSmallRcsBottomDown Int @default(0)
+  numberSmallRcsBottomUp Int @default(0)
+  numberSmallRcsBottomUnknown Int @default(0)
+  numberLargeRcs Int @default(0)
+  numberLargeRcsBottomDown Int @default(0)
+  numberLargeRcsBottomUp Int @default(0)
+  numberLargeRcsBottomUnknown Int @default(0)
+  @@index([geoLocationId])
+  @@index([createdAt])
+}
+
+model GeoLocationParents {
+  id String @id @default(uuid())
+  parentId String
+  childId String
+  parent GeoLocation @relation("GeoLocationChilds", fields: [parentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  child GeoLocation @relation("GeoLocationParents", fields: [childId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  @@index([childId])
+  @@index([parentId])
+  @@unique([childId, parentId], name: "ChildParentRelation")
+}
+
+model BlrGeoLocation {
+  id String @id @default(uuid())
+  locationId String @unique
+  locationType String
+  locationTypeCode String?
+  geoLocationId String @unique
+  geoLocation GeoLocation @relation("BlrGeoLocation", fields: [geoLocationId], references: [id], onUpdate: Cascade, onDelete: Cascade )
+  lastKnownLocationForRtis Rti[] @relation("LastKnownBlrLocation")
+  geofenceCertainty Decimal
+  geofenceCenter Json
+  businessUnit String?
+  buildingLetter String?
+  buildingNumber String
+  buildingNumberExtension String?
+  city String
+  country String
+  countryCode String?
+  postalCode String
+  streetName String
+
+  @@index([geoLocationId])
+  @@index([locationId])
+}
+
