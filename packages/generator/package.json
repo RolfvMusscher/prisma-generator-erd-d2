@@ -45,7 +45,8 @@
   "keywords": [
     "prisma",
     "prisma2",
-    "generator"
+    "generator",
+    "d2"
   ],
   "release": {
     "branches": [
