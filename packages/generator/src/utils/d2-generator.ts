@@ -19,8 +19,7 @@ export class D2Generator {
         return result;
 
     }
-
-    public WriteRelations(models: DMMF.Model[]) : string {
+    public WriteRelations(models: readonly import("@prisma/generator-helper").ReadonlyDeep<import("@prisma/generator-helper").ReadonlyDeep<import("@prisma/generator-helper").ReadonlyDeep<{ name: string; dbName: string | null; fields: DMMF.Field[]; uniqueFields: string[][]; uniqueIndexes: DMMF.uniqueIndex[]; documentation?: string; primaryKey: DMMF.PrimaryKey | null; isGenerated?: boolean; }>>>[]) {
         const foundRelations : string[] = [];
         models.forEach((model)=> {
             model.fields.forEach((candidateField) => {
