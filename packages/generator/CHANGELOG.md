@@ -1,3 +1,10 @@
+## [1.1.6](https://github.com/RolfvMusscher/prisma-generator-erd-d2/compare/v1.1.5...v1.1.6) (2024-11-14)
+
+
+### Bug Fixes
+
+* updating typing ([70eea50](https://github.com/RolfvMusscher/prisma-generator-erd-d2/commit/70eea50fb6239d8f7788d17c19febcae79204491))
+
 # [1.1.0](https://github.com/RolfvMusscher/prisma-generator-erd-d2/compare/v1.0.0...v1.1.0) (2023-12-12)
 
 
