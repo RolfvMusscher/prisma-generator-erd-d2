@@ -18,7 +18,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@prisma/client": "6.15.0",
+    "@prisma/client": "6.16.1",
     "@prisma/generator-helper": "6.16.0",
     "@prisma/sdk": "4.0.0",
     "prettier": "3.6.2"
