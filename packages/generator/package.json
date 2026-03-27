@@ -28,7 +28,7 @@
     "@types/node": "25.4.0",
     "@types/prettier": "3.0.0",
     "jest": "30.3.0",
-    "prisma": "7.5.0",
+    "prisma": "7.6.0",
     "ts-jest": "29.4.6",
     "typescript": "6.0.2",
     "@semantic-release/changelog": "^6.0.1",
