@@ -29,7 +29,7 @@
     "@types/prettier": "3.0.0",
     "jest": "30.5.2",
     "prisma": "7.10.0",
-    "ts-jest": "29.4.12",
+    "ts-jest": "29.4.14",
     "typescript": "7.0.2",
     "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/git": "^11.0.0",
